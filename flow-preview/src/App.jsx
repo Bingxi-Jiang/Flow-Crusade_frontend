@@ -125,7 +125,8 @@ const THEMES = {
 
 export default function FlowCrusadeApp() {
   // Global States
-  const [theme, setTheme] = useState('dark');
+  // Default to Day theme (user request)
+  const [theme, setTheme] = useState('light');
   const t = THEMES[theme];
   
   const [tasks, setTasks] = useState(INITIAL_TASKS);
@@ -135,8 +136,9 @@ export default function FlowCrusadeApp() {
   const [stats, setStats] = useState(INITIAL_STATS);
   const [events, setEvents] = useState(INITIAL_EVENTS);
   const [notes, setNotes] = useState(INITIAL_NOTES);
+  const [isNotesOpen, setIsNotesOpen] = useState(false); // mobile / tablet drawer
   const [settings, setSettings] = useState({
-    theme: 'dark',
+    theme: 'light',
     monitorEnabled: true,
     distractThreshold: 5,
     storagePath: '/Users/local/flow-crusade/data',
@@ -348,7 +350,7 @@ export default function FlowCrusadeApp() {
       </main>
 
       {/* ================= RIGHT SIDEBAR: QUICK NOTES ================= */}
-      <aside className={`flex flex-col border-l transition-all duration-300 z-10 shrink-0 ${t.bgPanel} ${t.border} ${isFocusedMode ? 'w-16 cursor-pointer hover:bg-white/5' : 'w-0 lg:w-80 hidden lg:flex'}`}
+      <aside className={`flex flex-col border-l transition-all duration-300 z-10 shrink-0 ${t.bgPanel} ${t.border} ${isFocusedMode ? `w-16 cursor-pointer ${theme === 'dark' ? 'hover:bg-white/5' : 'hover:bg-slate-100'}` : 'w-0 lg:w-80 hidden lg:flex'}`}
              onClick={() => isFocusedMode && setIsFocusedMode(false)}>
         
         {isFocusedMode ? (
@@ -357,45 +359,43 @@ export default function FlowCrusadeApp() {
             <div className="writing-vertical-rl text-[10px] tracking-[0.2em] uppercase opacity-50">Quick Notes</div>
           </div>
         ) : (
-          <div className="flex flex-col h-full p-6">
-            <h3 className={`font-bold flex items-center gap-2 mb-6 ${t.textMain}`}>
-              <div className="p-1.5 bg-indigo-500/10 rounded-lg"><Edit3 className="w-4 h-4 text-indigo-500" /></div>
-              Quick Notes
-            </h3>
-            
-            <div className="flex-1 overflow-y-auto flex flex-col gap-3 pr-2 custom-scrollbar">
-              {notes.map(note => (
-                <div key={note.id} className={`p-4 rounded-xl border group relative ${t.bgCard} ${t.border}`}>
-                  <p className={`text-sm leading-relaxed mb-2 ${t.textMain}`}>{note.text}</p>
-                  <span className={`text-[10px] font-medium ${t.textMuted}`}>{note.timestamp}</span>
-                  <button 
-                    onClick={() => setNotes(notes.filter(n => n.id !== note.id))}
-                    className="absolute top-2 right-2 p-1.5 text-gray-400 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity rounded-md hover:bg-red-400/10"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              ))}
-              {notes.length === 0 && <p className={`text-sm text-center mt-10 ${t.textMuted}`}>No notes yet.</p>}
-            </div>
-
-            <div className={`mt-4 pt-4 border-t relative ${t.border}`}>
-              <input 
-                type="text" 
-                placeholder="Jot down a thought..." 
-                className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 transition-all pr-10 ${t.bgInput} ${t.border} ${t.textMain} focus:border-indigo-500 focus:ring-indigo-500`}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && e.target.value.trim()) {
-                    setNotes([{ id: Date.now(), text: e.target.value, timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }, ...notes]);
-                    e.target.value = '';
-                  }
-                }}
-              />
-              <Plus className={`w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none ${t.textMuted}`} />
-            </div>
-          </div>
+          <QuickNotesPanel t={t} theme={theme} notes={notes} setNotes={setNotes} />
         )}
       </aside>
+
+      {/* Mobile/Tablet: Quick Notes FAB + Drawer (so notes work below lg) */}
+      <button
+        onClick={() => setIsNotesOpen(true)}
+        className={`fixed bottom-6 right-6 lg:hidden z-30 p-4 rounded-2xl shadow-xl border transition-colors ${t.bgPanel} ${t.border} ${t.textMain} hover:border-indigo-500/40 hover:bg-indigo-500/5`}
+        aria-label="Open Quick Notes"
+        title="Quick Notes"
+      >
+        <Edit3 className="w-5 h-5" />
+      </button>
+
+      {isNotesOpen && (
+        <div className="fixed inset-0 z-40 lg:hidden">
+          <div
+            className="absolute inset-0 bg-black/30 backdrop-blur-sm"
+            onClick={() => setIsNotesOpen(false)}
+          />
+          <div className={`absolute right-0 top-0 bottom-0 w-full max-w-md border-l shadow-2xl flex flex-col ${t.bgPanel} ${t.border} animate-slide-up`}>
+            <div className={`p-6 flex items-center justify-between border-b ${t.border}`}>
+              <h3 className={`font-bold text-lg ${t.textMain}`}>Quick Notes</h3>
+              <button
+                onClick={() => setIsNotesOpen(false)}
+                className={`p-2 rounded-xl transition-colors ${t.textMuted} ${theme === 'dark' ? 'hover:bg-white/5' : 'hover:bg-slate-100'}`}
+                aria-label="Close Quick Notes"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-6 flex-1 overflow-y-auto custom-scrollbar">
+              <QuickNotesPanel t={t} theme={theme} notes={notes} setNotes={setNotes} showHeader={false} />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Global Toast */}
       {toast && (
@@ -428,7 +428,7 @@ function ViewA({ t, theme, onSubmit, showToast }) {
       </div>
 
       <div className="w-full mt-4">
-        <ChatInput t={t} onSubmit={onSubmit} onUploadClick={() => showToast('Mock Upload Triggered')} placeholder="e.g. Write a 5-page history essay by Friday..." />
+        <ChatInput t={t} theme={theme} onSubmit={onSubmit} onUploadClick={() => showToast('Mock Upload Triggered')} placeholder="e.g. Write a 5-page history essay by Friday..." />
       </div>
 
       <div className="flex flex-wrap justify-center gap-3 mt-10">
@@ -509,7 +509,7 @@ function ViewB({ t, theme, task, tasks, onBreakdown, onSwitchTask, showToast }) 
       </div>
 
       <div className="mt-12 w-full max-w-3xl mx-auto">
-        <ChatInput t={t} onSubmit={() => showToast("Context added to task")} onUploadClick={() => showToast('Mock Upload')} placeholder="Add more context to this task before breaking it down..." />
+        <ChatInput t={t} theme={theme} onSubmit={() => showToast("Context added to task")} onUploadClick={() => showToast('Mock Upload')} placeholder="Add more context to this task before breaking it down..." />
       </div>
     </div>
   );
@@ -541,7 +541,7 @@ function ViewCE({ t, theme, rootTask, path, onBreakdown, showToast }) {
   return (
     <div className="flex-1 max-w-4xl mx-auto w-full animate-fade-in pb-10">
       
-      <div className="mb-8 mt-2 flex justify-between items-end border-b pb-6 border-white/5">
+      <div className={`mb-8 mt-2 flex justify-between items-end border-b pb-6 ${t.border}`}>
         <div>
           <h2 className={`text-2xl font-bold mb-2 ${t.textMain}`}>{currentContext.title}</h2>
           <p className={`text-sm ${t.textMuted}`}>Select a step to focus on, or break it down further.</p>
@@ -568,7 +568,7 @@ function ViewCE({ t, theme, rootTask, path, onBreakdown, showToast }) {
                 </div>
                 
                 {sub.children && sub.children.length > 0 && (
-                  <div className={`flex items-center gap-2 mt-4 text-xs font-semibold px-3 py-1.5 rounded-md w-fit bg-white/5 ${t.textMuted}`}>
+                  <div className={`flex items-center gap-2 mt-4 text-xs font-semibold px-3 py-1.5 rounded-md w-fit ${theme === 'dark' ? 'bg-white/5' : 'bg-slate-100'} ${t.textMuted}`}>
                      <ChevronRight className="w-3 h-3" />
                      {sub.children.length} deeper sub-steps available
                   </div>
@@ -710,8 +710,11 @@ function NavItem({ t, icon, label, active, isFocusedMode, onClick }) {
   );
 }
 
-function ChatInput({ t, onSubmit, onUploadClick, placeholder }) {
+function ChatInput({ t, theme, onSubmit, onUploadClick, placeholder }) {
   const [val, setVal] = useState('');
+  const disabledSendCls = theme === 'dark'
+    ? 'bg-white/5 text-gray-500'
+    : 'bg-slate-200 text-slate-400';
   
   return (
     <div className={`relative flex items-center border shadow-xl rounded-full p-2 focus-within:ring-2 focus-within:border-indigo-500 transition-all w-full max-w-3xl mx-auto ${t.bgInput} ${t.border}`}>
@@ -735,7 +738,7 @@ function ChatInput({ t, onSubmit, onUploadClick, placeholder }) {
         <button 
           onClick={() => { if(val.trim()) { onSubmit(val); setVal(''); } }}
           disabled={!val.trim()}
-          className={`p-3 rounded-full transition-all flex items-center justify-center ${val.trim() ? 'bg-indigo-600 text-white shadow-md hover:bg-indigo-500 active:scale-95' : 'bg-white/5 text-gray-500'}`}
+          className={`p-3 rounded-full transition-all flex items-center justify-center ${val.trim() ? 'bg-indigo-600 text-white shadow-md hover:bg-indigo-500 active:scale-95' : disabledSendCls}`}
         >
           <Send className={`w-5 h-5 ${val.trim() ? 'translate-x-0.5 -translate-y-0.5' : ''}`} />
         </button>
@@ -769,17 +772,103 @@ function LeftPanels({ t, theme, activePanel, close, stats, events, tasks, settin
   if (!activePanel) return null;
 
   return (
-    <div className={`absolute left-[80px] lg:left-[256px] top-0 bottom-0 w-80 md:w-96 border-r shadow-2xl z-30 animate-slide-right flex flex-col ${t.bgPanel} ${t.border}`}>
-      <div className={`p-6 flex items-center justify-between border-b ${t.border}`}>
-        <h3 className={`font-bold text-lg capitalize ${t.textMain}`}>{activePanel}</h3>
-        <button onClick={close} className={`p-2 rounded-xl transition-colors ${t.textMuted} hover:bg-white/5`}><X className="w-5 h-5" /></button>
+    <div className="fixed inset-0 z-30">
+      {/* Mobile backdrop */}
+      <div
+        className="absolute inset-0 bg-black/30 backdrop-blur-sm md:hidden"
+        onClick={close}
+      />
+
+      <div className={`absolute left-0 md:left-[80px] lg:left-[256px] top-0 bottom-0 w-full sm:w-96 border-r shadow-2xl animate-slide-right flex flex-col ${t.bgPanel} ${t.border}`}>
+        <div className={`p-6 flex items-center justify-between border-b ${t.border}`}>
+          <h3 className={`font-bold text-lg capitalize ${t.textMain}`}>{activePanel}</h3>
+          <button onClick={close} className={`p-2 rounded-xl transition-colors ${t.textMuted} ${theme === 'dark' ? 'hover:bg-white/5' : 'hover:bg-slate-100'}`}>
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <div className="p-6 flex-1 overflow-y-auto custom-scrollbar">
+          {activePanel === 'calendar' && <CalendarPanel t={t} tasks={tasks} onSelectTask={onSelectTask} onCreateTask={onCreateTask} activeTaskId={activeTaskId} />}
+          {activePanel === 'stats' && <StatsPanel t={t} theme={theme} stats={stats} />}
+          {activePanel === 'monitor' && <MonitorPanel t={t} theme={theme} events={events} onSimulate={onSimulateDistraction} enabled={settings.monitorEnabled} onToggle={(v) => setSettings({...settings, monitorEnabled: v})} />}
+          {activePanel === 'settings' && <SettingsPanel t={t} settings={settings} setSettings={setSettings} showToast={showToast} />}
+        </div>
       </div>
-      
-      <div className="p-6 flex-1 overflow-y-auto custom-scrollbar">
-        {activePanel === 'calendar' && <CalendarPanel t={t} tasks={tasks} onSelectTask={onSelectTask} onCreateTask={onCreateTask} activeTaskId={activeTaskId} />}
-        {activePanel === 'stats' && <StatsPanel t={t} theme={theme} stats={stats} />}
-        {activePanel === 'monitor' && <MonitorPanel t={t} theme={theme} events={events} onSimulate={onSimulateDistraction} enabled={settings.monitorEnabled} onToggle={(v) => setSettings({...settings, monitorEnabled: v})} />}
-        {activePanel === 'settings' && <SettingsPanel t={t} settings={settings} setSettings={setSettings} showToast={showToast} />}
+    </div>
+  );
+}
+
+// Quick Notes content (used both in the right sidebar and the mobile drawer)
+function QuickNotesPanel({ t, theme, notes, setNotes, showHeader = true }) {
+  const [val, setVal] = useState('');
+
+  const addNote = () => {
+    const text = val.trim();
+    if (!text) return;
+    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const note = { id: `${Date.now()}-${Math.random().toString(16).slice(2)}`, text, time };
+    setNotes([note, ...notes]);
+    setVal('');
+  };
+
+  const removeNote = (id) => setNotes(notes.filter(n => n.id !== id));
+
+  return (
+    <div className="flex flex-col h-full">
+      {showHeader && (
+        <div className={`p-6 border-b ${t.border}`}>
+          <h3 className={`font-bold text-lg ${t.textMain}`}>Quick Notes</h3>
+          <p className={`text-xs mt-1 ${t.textMuted}`}>Scratchpad for passing thoughts (not persisted in this demo).</p>
+        </div>
+      )}
+
+      <div className={`p-6 flex-1 overflow-y-auto custom-scrollbar ${showHeader ? '' : 'pt-0'}`}>
+        {notes.length === 0 ? (
+          <div className={`rounded-xl border p-4 text-sm ${t.bgCard} ${t.border} ${t.textMuted}`}>
+            No notes yet. Capture a thought before it slips.
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {notes.map((n) => (
+              <div key={n.id} className={`rounded-xl border p-3 ${t.bgCard} ${t.border}`}>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className={`text-[10px] font-bold ${t.textMuted}`}>{n.time}</div>
+                    <div className={`text-sm mt-1 break-words ${t.textMain}`}>{n.text}</div>
+                  </div>
+                  <button
+                    onClick={() => removeNote(n.id)}
+                    className={`p-2 rounded-lg transition-colors ${t.textMuted} ${theme === 'dark' ? 'hover:bg-white/5' : 'hover:bg-slate-100'}`}
+                    title="Remove"
+                    aria-label="Remove note"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className={`p-4 border-t ${t.border}`}>
+        <div className={`flex items-center gap-2 rounded-xl border px-3 py-2 ${t.bgInput} ${t.border}`}>
+          <input
+            value={val}
+            onChange={(e) => setVal(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') addNote(); }}
+            placeholder="Type a quick note and press Enter"
+            className={`flex-1 bg-transparent focus:outline-none text-sm ${t.textMain}`}
+          />
+          <button
+            onClick={addNote}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${val.trim() ? t.primaryBtn : t.secondaryBtn}`}
+            disabled={!val.trim()}
+            title="Add"
+          >
+            Add
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -923,7 +1012,7 @@ function MonitorPanel({ t, theme, events, onSimulate, enabled, onToggle }) {
         </div>
         <button 
           onClick={() => onToggle(!enabled)}
-          className={`relative w-12 h-6 rounded-full transition-colors ${enabled ? 'bg-indigo-500' : 'bg-gray-600'}`}
+          className={`relative w-12 h-6 rounded-full transition-colors ${enabled ? 'bg-indigo-500' : (theme === 'dark' ? 'bg-gray-600' : 'bg-slate-300')}`}
         >
            <span className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${enabled ? 'translate-x-6' : 'translate-x-0'}`} />
         </button>
@@ -987,7 +1076,7 @@ function SettingsPanel({ t, settings, setSettings, showToast }) {
                <Bell className={`w-4 h-4 ${t.textMuted}`} />
                <span className={`text-sm font-bold ${t.textMain}`}>Notifications</span>
              </div>
-             <button onClick={() => handleChange('notifications', !settings.notifications)} className={`relative w-10 h-5 rounded-full transition-colors ${settings.notifications ? 'bg-indigo-500' : 'bg-gray-600'}`}>
+             <button onClick={() => handleChange('notifications', !settings.notifications)} className={`relative w-10 h-5 rounded-full transition-colors ${settings.notifications ? 'bg-indigo-500' : (settings.theme === 'dark' ? 'bg-gray-600' : 'bg-slate-300')}`}>
                <span className={`absolute top-1 left-1 w-3 h-3 rounded-full bg-white transition-transform ${settings.notifications ? 'translate-x-5' : 'translate-x-0'}`} />
              </button>
           </div>

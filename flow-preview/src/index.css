@@ -2,74 +2,120 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+  Flow Crusade global CSS
+  - Remove the default Vite "center the app" styles (they cause the "half screen" issue)
+  - Avoid global <button> styling that leaks dark colors into Day mode
+  - Make html/body/#root consistently fill the viewport across all app states
+*/
 
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+    width: 100%;
   }
-  a:hover {
-    color: #747bff;
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    /* App background is controlled in App.jsx via theme classes */
+    background: transparent;
+    color: inherit;
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica,
+      Arial, "Apple Color Emoji", "Segoe UI Emoji";
   }
+
+  /* Let Tailwind utility classes fully control button appearance */
   button {
-    background-color: #f9f9f9;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    color: inherit;
+    font: inherit;
+  }
+
+  input,
+  textarea,
+  select {
+    font: inherit;
+    color: inherit;
   }
 }
 
+/* Small helper used by the focused-mode Quick Notes rail */
+.writing-vertical-rl {
+  writing-mode: vertical-rl;
+}
 
+/* Optional: nicer scrollbars for panels (works in Chromium/Safari) */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  border-radius: 9999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+  background-color: rgba(99, 102, 241, 0.35); /* indigo-ish */
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Lightweight animations used by the demo (so they work even without tailwind.config custom keyframes) */
+@keyframes fc-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fc-slide-right {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fc-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fc-fade-in 260ms ease-out both;
+}
+.animate-fade-in-up {
+  animation: fc-fade-in 260ms ease-out both;
+}
+.animate-slide-right {
+  animation: fc-slide-right 220ms ease-out both;
+}
+.animate-slide-up {
+  animation: fc-slide-up 220ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in,
+  .animate-fade-in-up,
+  .animate-slide-right,
+  .animate-slide-up {
+    animation: none !important;
+  }
+}
