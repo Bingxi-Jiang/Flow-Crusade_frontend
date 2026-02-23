@@ -8,13 +8,6 @@ import {
   ChevronDown, ChevronUp, ChevronLeft
 } from 'lucide-react';
 
-// Stats (FlowCat extension)
-import StatsTabs from './stats/StatsTabs';
-import FlowCatPanel from './stats/FlowCatPanel';
-import CollectionPanel from './stats/CollectionPanel';
-import TimeRangeStats from './stats/TimeRangeStats';
-import { loadFlowCatState } from './stats/flowcatStore';
-
 // ==========================================
 // 1. MOCK DATA & TYPES
 // ==========================================
@@ -951,139 +944,49 @@ function CalendarPanel({ t, tasks, onSelectTask, onCreateTask, activeTaskId }) {
 }
 
 // 4.2 Stats Panel
-// function StatsPanel({ t, theme, stats }) {
-//   return (
-//     <div className="space-y-4 animate-fade-in">
-       
-//        <div className={`p-6 rounded-2xl border relative overflow-hidden mb-6 shadow-xl ${theme === 'dark' ? 'bg-[#1c202a] border-white/10' : 'bg-gradient-to-br from-indigo-500 to-purple-600 border-transparent text-white'}`}>
-//           <Zap className="absolute -right-6 -bottom-6 w-32 h-32 text-indigo-500 opacity-10 pointer-events-none" />
-//           <h4 className={`text-xs font-bold uppercase tracking-wider mb-2 ${theme === 'dark' ? 'text-indigo-400' : 'text-indigo-100'}`}>Current Focus Score</h4>
-//           <div className="flex items-baseline gap-2 mb-4">
-//              <span className={`text-4xl font-black ${theme === 'dark' ? t.textMain : 'text-white'}`}>{stats.focusScore}</span>
-//              <span className={`text-sm font-semibold ${theme === 'dark' ? t.textMuted : 'text-indigo-200'}`}>/ {stats.maxScore}</span>
-//           </div>
-//           <div className={`w-full h-2 rounded-full overflow-hidden ${theme === 'dark' ? 'bg-[#0f1115]' : 'bg-white/20'}`}>
-//             <div className="h-full bg-indigo-500" style={{width: `${(stats.focusScore/stats.maxScore)*100}%`}}></div>
-//           </div>
-//           <p className={`text-xs mt-3 font-semibold ${theme === 'dark' ? t.textMuted : 'text-indigo-100'}`}>Only {stats.maxScore - stats.focusScore} pts to level up. Keep going!</p>
-//        </div>
-
-//        <div className="grid grid-cols-2 gap-3">
-//          <StatBox t={t} title="Focus Time" value={`${stats.focusTimeToday}m`} />
-//          <StatBox t={t} title="Avg Session" value={`${stats.avgSession}m`} />
-//          <StatBox t={t} title="Sessions" value={stats.sessions} />
-//          <StatBox t={t} title="Completion Rate" value={`${stats.completionRate}%`} />
-//        </div>
-
-//        <div className={`p-4 rounded-xl border mt-4 ${t.bgCard} ${t.border}`}>
-//          <h4 className={`text-xs font-bold uppercase mb-4 ${t.textMuted}`}>Distraction Report</h4>
-//          <div className="flex justify-between items-center mb-2">
-//             <span className={`text-sm ${t.textMain}`}>Total Count</span>
-//             <span className="text-rose-400 font-bold">{stats.distractCount} times</span>
-//          </div>
-//          <div className="flex justify-between items-center mb-4">
-//             <span className={`text-sm ${t.textMain}`}>Time Wasted</span>
-//             <span className="text-rose-400 font-bold">{stats.distractTime} mins</span>
-//          </div>
-//          <div className="mt-4">
-//             <span className={`text-xs font-bold uppercase ${t.textMuted} block mb-2`}>Top Triggers</span>
-//             <div className="flex flex-wrap gap-2">
-//               {stats.topDistractions.map(d => (
-//                 <span key={d} className={`text-xs px-2 py-1 rounded-md bg-rose-500/10 text-rose-400 border border-rose-500/20`}>{d}</span>
-//               ))}
-//             </div>
-//          </div>
-//        </div>
-//     </div>
-//   );
-// }
-
 function StatsPanel({ t, theme, stats }) {
-  const [tab, setTab] = useState('overview');
-  const [flowcat, setFlowcat] = useState(() => loadFlowCatState());
-
-  // Keep Stats UI in sync if another tab updates localStorage
-  useEffect(() => {
-    const onStorage = (e) => {
-      if (e.key === 'flowcat_v1') setFlowcat(loadFlowCatState());
-    };
-    window.addEventListener('storage', onStorage);
-    return () => window.removeEventListener('storage', onStorage);
-  }, []);
-
   return (
     <div className="space-y-4 animate-fade-in">
-      <StatsTabs
-        t={t}
-        theme={theme}
-        value={tab}
-        onChange={setTab}
-        tabs={[
-          { key: 'overview', label: 'Overview' },
-          { key: 'flowcat', label: 'FlowCat' },
-          { key: 'collection', label: 'Collection' },
-        ]}
-      />
-
-      {tab === 'overview' && (
-        <div className="space-y-4">
-          <TimeRangeStats t={t} theme={theme} sessions={flowcat.sessions} />
-
-          {/* keep your original focus score + stat boxes + distraction report unchanged */}
-          <div className={`p-6 rounded-2xl border relative overflow-hidden mb-6 shadow-xl ${theme === 'dark' ? 'bg-[#1c202a] border-white/10' : 'bg-gradient-to-br from-indigo-500 to-purple-600 border-transparent text-white'}`}>
-            <Zap className="absolute -right-6 -bottom-6 w-32 h-32 text-indigo-500 opacity-10 pointer-events-none" />
-            <h4 className={`text-xs font-bold uppercase tracking-wider mb-2 ${theme === 'dark' ? 'text-indigo-400' : 'text-indigo-100'}`}>Current Focus Score</h4>
-            <div className="flex items-baseline gap-2 mb-4">
-              <span className={`text-4xl font-black ${theme === 'dark' ? t.textMain : 'text-white'}`}>{stats.focusScore}</span>
-              <span className={`text-sm font-semibold ${theme === 'dark' ? t.textMuted : 'text-indigo-200'}`}>/ {stats.maxScore}</span>
-            </div>
-            <div className={`w-full h-2 rounded-full overflow-hidden ${theme === 'dark' ? 'bg-[#0f1115]' : 'bg-white/20'}`}>
-              <div className="h-full bg-indigo-500" style={{width: `${(stats.focusScore/stats.maxScore)*100}%`}}></div>
-            </div>
-            <p className={`text-xs mt-3 font-semibold ${theme === 'dark' ? t.textMuted : 'text-indigo-100'}`}>Only {stats.maxScore - stats.focusScore} pts to level up. Keep going!</p>
+       
+       <div className={`p-6 rounded-2xl border relative overflow-hidden mb-6 shadow-xl ${theme === 'dark' ? 'bg-[#1c202a] border-white/10' : 'bg-gradient-to-br from-indigo-500 to-purple-600 border-transparent text-white'}`}>
+          <Zap className="absolute -right-6 -bottom-6 w-32 h-32 text-indigo-500 opacity-10 pointer-events-none" />
+          <h4 className={`text-xs font-bold uppercase tracking-wider mb-2 ${theme === 'dark' ? 'text-indigo-400' : 'text-indigo-100'}`}>Current Focus Score</h4>
+          <div className="flex items-baseline gap-2 mb-4">
+             <span className={`text-4xl font-black ${theme === 'dark' ? t.textMain : 'text-white'}`}>{stats.focusScore}</span>
+             <span className={`text-sm font-semibold ${theme === 'dark' ? t.textMuted : 'text-indigo-200'}`}>/ {stats.maxScore}</span>
           </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <StatBox t={t} title="Focus Time" value={`${stats.focusTimeToday}m`} />
-            <StatBox t={t} title="Avg Session" value={`${stats.avgSession}m`} />
-            <StatBox t={t} title="Sessions" value={stats.sessions} />
-            <StatBox t={t} title="Completion Rate" value={`${stats.completionRate}%`} />
+          <div className={`w-full h-2 rounded-full overflow-hidden ${theme === 'dark' ? 'bg-[#0f1115]' : 'bg-white/20'}`}>
+            <div className="h-full bg-indigo-500" style={{width: `${(stats.focusScore/stats.maxScore)*100}%`}}></div>
           </div>
+          <p className={`text-xs mt-3 font-semibold ${theme === 'dark' ? t.textMuted : 'text-indigo-100'}`}>Only {stats.maxScore - stats.focusScore} pts to level up. Keep going!</p>
+       </div>
 
-          <div className={`p-4 rounded-xl border mt-4 ${t.bgCard} ${t.border}`}>
-            <h4 className={`text-xs font-bold uppercase mb-4 ${t.textMuted}`}>Distraction Report</h4>
-            <div className="flex justify-between items-center mb-2">
-              <span className={`text-sm ${t.textMain}`}>Total Count</span>
-              <span className="text-rose-400 font-bold">{stats.distractCount} times</span>
-            </div>
-            <div className="flex justify-between items-center mb-4">
-              <span className={`text-sm ${t.textMain}`}>Time Wasted</span>
-              <span className="text-rose-400 font-bold">{stats.distractTime} mins</span>
-            </div>
-            <div className="mt-4">
-              <span className={`text-xs font-bold uppercase ${t.textMuted} block mb-2`}>Top Triggers</span>
-              <div className="flex flex-wrap gap-2">
-                {stats.topDistractions.map(d => (
-                  <span key={d} className={`text-xs px-2 py-1 rounded-md bg-rose-500/10 text-rose-400 border border-rose-500/20`}>{d}</span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+       <div className="grid grid-cols-2 gap-3">
+         <StatBox t={t} title="Focus Time" value={`${stats.focusTimeToday}m`} />
+         <StatBox t={t} title="Avg Session" value={`${stats.avgSession}m`} />
+         <StatBox t={t} title="Sessions" value={stats.sessions} />
+         <StatBox t={t} title="Completion Rate" value={`${stats.completionRate}%`} />
+       </div>
 
-      {tab === 'flowcat' && (
-        <FlowCatPanel
-          t={t}
-          theme={theme}
-          state={flowcat}
-          onStateChange={setFlowcat}
-        />
-      )}
-
-      {tab === 'collection' && (
-        <CollectionPanel t={t} theme={theme} state={flowcat} />
-      )}
+       <div className={`p-4 rounded-xl border mt-4 ${t.bgCard} ${t.border}`}>
+         <h4 className={`text-xs font-bold uppercase mb-4 ${t.textMuted}`}>Distraction Report</h4>
+         <div className="flex justify-between items-center mb-2">
+            <span className={`text-sm ${t.textMain}`}>Total Count</span>
+            <span className="text-rose-400 font-bold">{stats.distractCount} times</span>
+         </div>
+         <div className="flex justify-between items-center mb-4">
+            <span className={`text-sm ${t.textMain}`}>Time Wasted</span>
+            <span className="text-rose-400 font-bold">{stats.distractTime} mins</span>
+         </div>
+         <div className="mt-4">
+            <span className={`text-xs font-bold uppercase ${t.textMuted} block mb-2`}>Top Triggers</span>
+            <div className="flex flex-wrap gap-2">
+              {stats.topDistractions.map(d => (
+                <span key={d} className={`text-xs px-2 py-1 rounded-md bg-rose-500/10 text-rose-400 border border-rose-500/20`}>{d}</span>
+              ))}
+            </div>
+         </div>
+       </div>
     </div>
   );
 }
