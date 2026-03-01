@@ -1,143 +1,212 @@
+# Flow Crusade (Frontend Demo)
 
+### ADHD-friendly focus system designed to reduce initiation friction and sustain deep work
 
-# Flow Preview
+<p align="center">
+  <img src="public/screenshots/home.png" width="800" alt="Flow Crusade Banner"/>
+</p>
 
-A lightweight React application built with **Vite** and styled using **Tailwind CSS**.
-This project demonstrates a modern frontend development workflow with fast hot-reload and optimized builds.
+<p align="center">
+  <b>Break tasks → Enter flow → Track progress → Reinforce focus loops</b>
+</p>
 
----
-
-## 🚀 Tech Stack
-
-* React
-* Vite
-* Tailwind CSS
-* PostCSS
-* ESLint
-
----
-
-## 📦 Project Structure
-
-```
-flow-preview/
-│
-├── public/                # Static assets
-├── src/
-│   ├── App.jsx            # Main application component
-│   ├── main.jsx           # React entry point
-│   └── index.css          # Global styles (Tailwind included)
-│
-├── index.html             # Root HTML template
-├── package.json           # Project dependencies & scripts
-├── vite.config.js         # Vite configuration
-├── tailwind.config.js     # Tailwind configuration
-├── postcss.config.js      # PostCSS configuration
-└── eslint.config.js       # Linting configuration
-```
+<p align="center">
+  <img src="https://img.shields.io/badge/React-18-blue"/>
+  <img src="https://img.shields.io/badge/Vite-fast-purple"/>
+  <img src="https://img.shields.io/badge/Tailwind-modern-38BDF8"/>
+  <img src="https://img.shields.io/badge/status-demo-orange"/>
+</p>
 
 ---
 
-## 🛠 Installation
+# 🧠 Concept
 
-Clone the repository:
 
+
+**Flow Crusade** is a productivity interface designed specifically for ADHD-like cognitive workflows, where the hardest step is often simply starting.
+
+Instead of overwhelming users with large goals, it:
+
+* converts tasks into small executable steps
+* lowers activation energy for focus
+* provides immediate feedback and reinforcement
+* visualizes progress to sustain momentum
+
+This transforms:
+
+> “I can’t start.”
+> → into
+> “I can do this one step now.”
+
+---
+
+# ✨ Core Features
+
+## 🪜 Recursive Task Breakdown
+
+<p align="center">
+<img src="public/screenshots/breakdown.png" width="700"/>
+</p>
+
+**Convert overwhelming goals into executable units**
+
+Capabilities:
+
+• infinite task → subtask → sub-subtask hierarchy
+• breadcrumb navigation
+• drill-down execution model
+
+Mental effect:
+
+> reduces cognitive load and decision paralysis
+
+---
+
+## ⏱ Focus Mode
+
+<p align="center">
+<img src="public/screenshots/focus.png" width="700"/>
+</p>
+
+Enter a dedicated execution state.
+
+Features:
+
+• start / pause / resume sessions
+• visual timer feedback
+• single-task isolation
+
+Designed to minimize:
+
+• context switching
+• avoidance loops
+
+---
+## 📊 Feedback & Reinforcement System
+
+<table align="center">
+<tr>
+<td align="center">
+<img src="public/screenshots/stats.png" width="260"><br>
+<b>Statistics</b><br>
+Behavior metrics & trends
+</td>
+<td align="center">
+<img src="public/screenshots/rewards.png" width="260"><br>
+<b>Rewards</b><br>
+Gamified reinforcement
+</td>
+<td align="center">
+<img src="public/screenshots/monitor.png" width="260"><br>
+<b>Monitor</b><br>
+Distraction tracking
+</td>
+
+</tr>
+</table>
+
+---
+
+## 📝 Quick Notes Capture
+
+Prevents derailment from intrusive thoughts.
+
+Instead of switching tasks:
+
+→ capture instantly
+→ continue focus
+
+---
+## 🧱 Tech Stack
+
+- **React** + **Vite** (fast dev server + modern build)
+- **Tailwind CSS** for styling
+- **lucide-react** icons (UI icon set used throughout)
+
+---
+
+## 🚀 Local Development
+
+### 1) Clone
 ```bash
-git clone <your-repo-url>
-cd flow-preview
-```
+git clone https://github.com/Bingxi-Jiang/Flow-Crusade_frontend.git
+cd Flow-Crusade_frontend
+````
 
-Install dependencies:
+### 2) Install
 
 ```bash
 npm install
 ```
 
----
-
-## 💻 Development
-
-Start the development server:
+### 3) Run (Dev)
 
 ```bash
 npm run dev
 ```
 
-Vite will start a local development server (usually at):
+Vite will start a local dev server (commonly):
 
-```
-http://localhost:5173
-```
-
-The page reloads automatically when you edit files.
+* [http://localhost:5173](http://localhost:5173)
 
 ---
 
-## 🏗 Build for Production
-
-To generate an optimized production build:
+## 📦 Production Build
 
 ```bash
 npm run build
-```
-
-The build output will be generated inside the `dist/` directory.
-
-To preview the production build locally:
-
-```bash
 npm run preview
 ```
 
+* Build output: `dist/`
+
 ---
 
-## 🎨 Tailwind CSS Usage
+## 🗂️ Project Structure (high-level)
 
-Tailwind directives are included in:
-
-```
-src/index.css
-```
-
-```css
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-```
-
-You can use Tailwind utility classes directly in your JSX:
-
-```jsx
-<div className="flex items-center justify-center h-screen bg-gray-100">
-  <h1 className="text-3xl font-bold">Hello World</h1>
-</div>
+```text
+Flow-Crusade_frontend/
+├─ public/                 # static assets (put screenshots here)
+├─ src/
+│  ├─ App.jsx              # main demo app (UI + demo logic)
+│  ├─ main.jsx             # react entry
+│  └─ index.css            # tailwind entry
+├─ index.html
+├─ package.json
+├─ vite.config.js
+├─ tailwind.config.js
+└─ postcss.config.js
 ```
 
 ---
 
-## 🧹 Linting
+## 🧪 Notes (This is a Demo)
 
-Run ESLint manually:
-
-```bash
-npm run lint
-```
+* Current data (tasks, stats, events, notes) is demo/mock-driven to showcase UX.
+* “Monitor” and “Rewards” are implemented as product-like flows, but they’re **not yet connected to a real backend** in this frontend repo.
 
 ---
 
-## 📌 Notes
+## 🛣️ Roadmap (Suggested)
 
-* Do **not** commit `node_modules/`
-* Do **not** commit `dist/`
-* Make sure `.gitignore` includes:
+* [ ] Real persistence (LocalStorage / IndexedDB)
+* [ ] Integrate with backend (task generation + monitoring signals)
+* [ ] Export stats + streaks
 
-  ```
-  node_modules
-  dist
-  ```
+
+---
+
+## 🤝 Contributing
+
+PRs are welcome — especially for:
+
+* UI polish (animations, micro-interactions)
+* Better breakdown UX (keyboard-first, quick refine)
+* Accessibility & mobile ergonomics
 
 ---
 
 ## 📄 License
 
-This project is for educational and personal use.
+Educational / personal demo use.
+
