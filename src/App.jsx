@@ -273,11 +273,11 @@ export default function FlowCrusadeApp() {
         <div className="flex-grow" />
 
         {/* Reward Progress Orb */}
-        <div className="mb-4">
+        <div className="mb-4 flex flex-col items-center w-full px-3">
           <button
             type="button"
             onClick={openRewards}
-            className={`group relative w-12 h-12 rounded-2xl flex items-center justify-center border shadow-sm transition-transform active:scale-95 ${theme === 'dark' ? 'bg-[#1c202a] border-white/5' : 'bg-white border-slate-200'} ${nearReward ? 'ring-2 ring-indigo-500/25' : ''}`}
+            className={`group relative w-12 h-12 rounded-2xl flex items-center justify-center border shadow-sm transition-transform active:scale-95 mx-auto ${theme === 'dark' ? 'bg-[#1c202a] border-white/5' : 'bg-white border-slate-200'} ${nearReward ? 'ring-2 ring-indigo-500/25' : ''}`}
             title="Rewards progress"
           >
             <ProgressRing percent={rewardProgress} theme={theme} size={48} stroke={5} />
@@ -1377,29 +1377,24 @@ function StatsPanel({ t, theme, stats }) {
                 </button>
               </div>
 
-              <div className={`text-xs ${t.textMuted}`}>
-                {rankTab === 'location'
-                  ? <>Anonymous ranking is filtered to your level: <span className={`font-bold ${t.textMain}`}>{level.name}</span></>
-                  : <>Friends ranking shows levels + focus minutes (opt-in)</>}
-              </div>
             </div>
 
             {/* Privacy toggles */}
-            <div className="mt-4 grid sm:grid-cols-2 gap-3">
-              <div className={`p-3 rounded-xl border flex items-center justify-between ${theme === 'dark' ? 'bg-white/5 border-white/10' : 'bg-slate-50 border-slate-200'}`}>
+            <div className="mt-4 grid grid-cols-1 gap-3">
+              <div className={`p-3 rounded-xl border flex items-center justify-between gap-3 ${theme === 'dark' ? 'bg-white/5 border-white/10' : 'bg-slate-50 border-slate-200'}`}>
                 <span className={`text-xs font-bold ${t.textMain}`}>Share with friends</span>
                 <button
                   onClick={() => setShareWithFriends(v => !v)}
-                  className={`relative w-10 h-5 rounded-full transition-colors ${shareWithFriends ? 'bg-indigo-500' : (theme === 'dark' ? 'bg-gray-600' : 'bg-slate-300')}`}
+                  className={`relative w-10 h-5 rounded-full transition-colors shrink-0 ${shareWithFriends ? 'bg-indigo-500' : (theme === 'dark' ? 'bg-gray-600' : 'bg-slate-300')}`}
                 >
                   <span className={`absolute top-1 left-1 w-3 h-3 rounded-full bg-white transition-transform ${shareWithFriends ? 'translate-x-5' : 'translate-x-0'}`} />
                 </button>
               </div>
-              <div className={`p-3 rounded-xl border flex items-center justify-between ${theme === 'dark' ? 'bg-white/5 border-white/10' : 'bg-slate-50 border-slate-200'}`}>
+              <div className={`p-3 rounded-xl border flex items-center justify-between gap-3 ${theme === 'dark' ? 'bg-white/5 border-white/10' : 'bg-slate-50 border-slate-200'}`}>
                 <span className={`text-xs font-bold ${t.textMain}`}>Share anonymously</span>
                 <button
                   onClick={() => setShareAnonymously(v => !v)}
-                  className={`relative w-10 h-5 rounded-full transition-colors ${shareAnonymously ? 'bg-indigo-500' : (theme === 'dark' ? 'bg-gray-600' : 'bg-slate-300')}`}
+                  className={`relative w-10 h-5 rounded-full transition-colors shrink-0 ${shareAnonymously ? 'bg-indigo-500' : (theme === 'dark' ? 'bg-gray-600' : 'bg-slate-300')}`}
                 >
                   <span className={`absolute top-1 left-1 w-3 h-3 rounded-full bg-white transition-transform ${shareAnonymously ? 'translate-x-5' : 'translate-x-0'}`} />
                 </button>
@@ -1526,10 +1521,10 @@ function MonitorPanel({ t, theme, events, onSimulate, enabled, onToggle }) {
 
       <div className="mt-8">
         <h4 className={`font-bold text-xs uppercase tracking-wider mb-4 ${t.textMuted}`}>Activity Timeline</h4>
-        <div className="space-y-0 relative before:absolute before:inset-0 before:ml-2.5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-white/10 before:to-transparent">
+        <div className={`space-y-0 relative before:absolute before:inset-0 before:ml-2.5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:to-transparent ${theme === 'dark' ? 'before:via-white/10' : 'before:via-slate-300'}`}>
           {events.map((ev, i) => (
             <div key={ev.id} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active mb-6">
-               <div className={`w-5 h-5 rounded-full border-4 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-sm ${ev.type === 'focus' ? 'bg-emerald-500 border-[#161920]' : 'bg-rose-500 border-[#161920]'} z-10 mx-auto absolute left-0 md:left-1/2 -translate-x-1/2`}></div>
+               <div className={`w-5 h-5 rounded-full border-4 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-sm ${ev.type === 'focus' ? 'bg-emerald-500' : 'bg-rose-500'} ${theme === 'dark' ? 'border-[#161920]' : 'border-white'} z-10 mx-auto absolute left-0 md:left-1/2 -translate-x-1/2`}></div>
                
                <div className={`w-[calc(100%-2rem)] md:w-[calc(50%-2rem)] ml-8 md:ml-0 p-4 rounded-xl border shadow-sm ${t.bgCard} ${t.border}`}>
                  <div className="flex items-center justify-between mb-1">
